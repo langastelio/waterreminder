@@ -70,9 +70,86 @@ html, body {
 }
 @keyframes fill { from { width: 0%; } to { width: 100%; } }
 
+/* ---------- Onboarding ---------- */
+.onboarding {
+  position: fixed; inset: 0; z-index: 90;
+  background: linear-gradient(160deg, #d6ecff 0%, var(--bg) 60%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; overflow-y: auto;
+}
+.onboarding[hidden] { display: none; }
+.ob-card {
+  width: 100%; max-width: 380px;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 26px 22px calc(22px + env(safe-area-inset-bottom));
+  box-shadow: 0 18px 50px rgba(31,58,95,.18);
+  animation: pop .35s ease;
+}
+.ob-drop {
+  width: 76px; height: 76px; margin: 0 auto 8px;
+  border-radius: 50%; background: var(--blue);
+  display: grid; place-items: center; font-size: 38px;
+  box-shadow: 0 8px 20px rgba(62,160,247,.4);
+}
+.ob-card h2 { text-align: center; font-size: 22px; }
+.ob-sub { text-align: center; color: var(--muted); font-size: 14px; margin: 4px 0 20px; }
+.ob-presets { display: flex; gap: 8px; margin: -8px 0 16px; }
+.ob-presets button {
+  flex: 1; border: 1.5px solid var(--blue-light); background: transparent;
+  color: var(--blue-dark); font-weight: 700; font-size: 13px;
+  padding: 8px 0; border-radius: 12px; cursor: pointer;
+}
+.ob-presets button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
 /* ---------- Views ---------- */
 .view[hidden] { display: none; }
 .page-title { font-size: 20px; font-weight: 800; }
+
+/* ---------- Form inputs (shared) ---------- */
+.field input[type="text"],
+.field select {
+  border: 1.5px solid #e2ebf6; border-radius: 12px;
+  padding: 12px 14px; font-size: 16px; color: var(--ink);
+  background: #fff; -webkit-appearance: none; appearance: none;
+}
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237e93ad' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+
+/* ---------- Dark theme ---------- */
+html[data-theme="dark"] {
+  --bg: #0f1b2d;
+  --ink: #e7eefb;
+  --muted: #8497b3;
+  --card: #18263d;
+  --blue-light: #3a6189;
+}
+html[data-theme="dark"] body { background: var(--bg); }
+html[data-theme="dark"] .app { background: linear-gradient(180deg, #14233b 0%, var(--bg) 38%); }
+html[data-theme="dark"] .onboarding { background: linear-gradient(160deg, #14233b 0%, var(--bg) 60%); }
+html[data-theme="dark"] .avatar,
+html[data-theme="dark"] .chip,
+html[data-theme="dark"] .sheet,
+html[data-theme="dark"] .tabbar,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .chart,
+html[data-theme="dark"] .record-item,
+html[data-theme="dark"] .history-item { background: var(--card); }
+html[data-theme="dark"] .chip { color: #cfe4fb; border-color: #2c4566; }
+html[data-theme="dark"] .tabbar { border-top-color: #22344f; }
+html[data-theme="dark"] .field input[type="number"],
+html[data-theme="dark"] .field input[type="text"],
+html[data-theme="dark"] .field select {
+  background-color: #12203a; border-color: #2a3c57; color: var(--ink);
+}
+html[data-theme="dark"] .record-item .amt,
+html[data-theme="dark"] .h-bar { background: #1e3350; }
+html[data-theme="dark"] .record-item .amt { color: #9ecbf5; }
+html[data-theme="dark"] .sheet-handle { background: #2c3f5a; }
+html[data-theme="dark"] .ob-presets button { border-color: #3a6189; }
+html[data-theme="dark"] .badge-met { background: #18352a; color: #5fd0a0; }
 
 /* Header */
 .header {

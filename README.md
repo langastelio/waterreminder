@@ -43,6 +43,17 @@ Accessed via the bottom tab bar:
 - **Daily totals list** — every recorded day, newest first, with a progress bar,
   amount-vs-goal, and a ✅ “Goal met” badge.
 
+### 👋 Onboarding (first launch)
+On the very first launch, after the splash screen, a one-time setup card asks for the
+user's **name**, **daily goal** (with quick presets), and **reminder** preferences. After
+that it never shows again (tracked by an `onboarded` flag in settings). The name powers a
+time-aware greeting ("Good morning, Carlos!").
+
+### 🌗 Dark mode & theming
+A **Theme** setting offers **System (auto)**, **Light**, and **Dark**. In System mode the
+app follows the OS color scheme live via `prefers-color-scheme`, and the status-bar
+`theme-color` updates to match.
+
 ### 🔔 Reminders & Settings
 A settings sheet (bell icon) lets the user:
 - Set the **daily goal** (ml).

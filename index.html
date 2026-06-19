@@ -24,6 +24,38 @@
     <div class="splash-bar"><span></span></div>
   </div>
 
+  <!-- Onboarding (first launch) -->
+  <div class="onboarding" id="onboarding" hidden>
+    <div class="ob-card">
+      <div class="ob-drop">💧</div>
+      <h2>Welcome!</h2>
+      <p class="ob-sub">Let's set up your hydration goals.</p>
+
+      <label class="field">What should we call you?
+        <input type="text" id="obName" placeholder="Your name" autocomplete="name" />
+      </label>
+
+      <label class="field">Daily goal (ml)
+        <input type="number" id="obGoal" value="1600" min="200" step="100" />
+      </label>
+      <div class="ob-presets" id="obPresets">
+        <button type="button" data-goal="1200">1200</button>
+        <button type="button" data-goal="1600">1600</button>
+        <button type="button" data-goal="2000">2000</button>
+        <button type="button" data-goal="2500">2500</button>
+      </div>
+
+      <label class="field switch-field">Remind me to drink
+        <input type="checkbox" id="obRemind" />
+      </label>
+      <label class="field">Remind every (minutes)
+        <input type="number" id="obInterval" value="60" min="15" step="5" />
+      </label>
+
+      <button class="primary-btn" id="obFinish">Get Started</button>
+    </div>
+  </div>
+
   <div class="app" id="appRoot">
    <!-- ===== HOME VIEW ===== -->
    <div class="view" id="homeView">
@@ -31,7 +63,7 @@
     <header class="header">
       <div class="user">
         <div class="avatar">💧</div>
-        <span class="greeting">Have a good day!</span>
+        <span class="greeting" id="greeting">Have a good day!</span>
       </div>
       <button id="bellBtn" class="bell" aria-label="Reminders">🔔</button>
     </header>
@@ -116,6 +148,18 @@
     <div class="sheet" id="sheet">
       <div class="sheet-handle"></div>
       <h3>Settings</h3>
+      <label class="field">
+        Your name
+        <input type="text" id="nameInput" placeholder="Your name" />
+      </label>
+      <label class="field">
+        Theme
+        <select id="themeSelect">
+          <option value="system">System (auto)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
       <label class="field">
         Daily goal (ml)
         <input type="number" id="goalInput" min="200" step="100" />

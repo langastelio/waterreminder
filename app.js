@@ -1,5 +1,5 @@
 // ---------- State ----------
-const DEFAULTS = { goal: 1600, remind: false, interval: 60 };
+const DEFAULTS = { goal: 1600, remind: false, interval: 60, name: '', theme: 'system', onboarded: false };
 
 const keyForDate = (d) => `water-${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 const todayKey = () => keyForDate(new Date());
@@ -31,6 +31,34 @@ function loadRecords() {
 }
 function saveRecords() {
   localStorage.setItem(todayKey(), JSON.stringify(records));
+}
+
+// ---------- Theme ----------
+function resolveTheme() {
+  if (settings.theme === 'light' || settings.theme === 'dark') return settings.theme;
+  const m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+  return m && m.matches ? 'dark' : 'light';
+}
+function applyTheme() {
+  const t = resolveTheme();
+  document.documentElement.dataset.theme = t;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = t === 'dark' ? '#0f1b2d' : '#3ea0f7';
+}
+// React to OS theme changes while in "system" mode
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (settings.theme === 'system') applyTheme();
+  });
+}
+
+// ---------- Greeting ----------
+function updateGreeting() {
+  const g = el('greeting');
+  if (!g) return;
+  const h = new Date().getHours();
+  const part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  g.textContent = settings.name ? `${part}, ${settings.name}!` : 'Have a good day!';
 }
 
 // ---------- Render ----------
@@ -177,6 +205,8 @@ async function ensurePermission() {
 
 // ---------- Settings sheet ----------
 function openSheet() {
+  el('nameInput').value = settings.name;
+  el('themeSelect').value = settings.theme;
   el('goalInput').value = settings.goal;
   el('remindToggle').checked = settings.remind;
   el('intervalInput').value = settings.interval;
@@ -205,11 +235,15 @@ el('bellBtn').addEventListener('click', openSheet);
 overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSheet(); });
 
 el('saveSettings').addEventListener('click', async () => {
+  settings.name = el('nameInput').value.trim().slice(0, 24);
+  settings.theme = el('themeSelect').value;
   settings.goal = Math.max(200, parseInt(el('goalInput').value, 10) || DEFAULTS.goal);
   settings.interval = Math.max(15, parseInt(el('intervalInput').value, 10) || DEFAULTS.interval);
   const wantRemind = el('remindToggle').checked;
   settings.remind = wantRemind ? await ensurePermission() : false;
   saveSettingsStore();
+  applyTheme();
+  updateGreeting();
   startReminders();
   render();
   closeSheet();
@@ -338,12 +372,55 @@ document.querySelectorAll('.tab').forEach((t) =>
 const bell2 = el('bellBtn2');
 if (bell2) bell2.addEventListener('click', openSheet);
 
+// ---------- Onboarding (first launch) ----------
+function showOnboarding() {
+  const ob = el('onboarding');
+  el('obName').value = settings.name || '';
+  el('obGoal').value = settings.goal;
+  el('obInterval').value = settings.interval;
+  el('obRemind').checked = settings.remind;
+  markPreset(settings.goal);
+  ob.hidden = false;
+}
+function markPreset(goal) {
+  document.querySelectorAll('#obPresets button').forEach((b) =>
+    b.classList.toggle('active', +b.dataset.goal === +goal)
+  );
+}
+document.querySelectorAll('#obPresets button').forEach((b) =>
+  b.addEventListener('click', () => {
+    el('obGoal').value = b.dataset.goal;
+    markPreset(b.dataset.goal);
+  })
+);
+el('obGoal').addEventListener('input', (e) => markPreset(e.target.value));
+
+el('obFinish').addEventListener('click', async () => {
+  unlockAudio();
+  settings.name = el('obName').value.trim().slice(0, 24);
+  settings.goal = Math.max(200, parseInt(el('obGoal').value, 10) || DEFAULTS.goal);
+  settings.interval = Math.max(15, parseInt(el('obInterval').value, 10) || DEFAULTS.interval);
+  settings.remind = el('obRemind').checked ? await ensurePermission() : false;
+  settings.onboarded = true;
+  saveSettingsStore();
+  updateGreeting();
+  startReminders();
+  render();
+  el('onboarding').hidden = true;
+});
+
 // ---------- Splash (4s) ----------
 window.addEventListener('load', () => {
   const splash = el('splash');
-  if (!splash) return;
+  if (!splash) {
+    if (!settings.onboarded) showOnboarding();
+    return;
+  }
   setTimeout(() => splash.classList.add('hide'), 4000);
-  setTimeout(() => splash.remove(), 4600);
+  setTimeout(() => {
+    splash.remove();
+    if (!settings.onboarded) showOnboarding();
+  }, 4600);
 });
 
 // ---------- PWA service worker ----------
@@ -354,5 +431,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ---------- Init ----------
+applyTheme();
+updateGreeting();
 render();
 startReminders();
