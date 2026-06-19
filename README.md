@@ -31,7 +31,9 @@ into the main app.
   `current / goal` in millilitres.
 - A round **“+” button** for a quick 200 ml log.
 - **Quick-add chips** — `+100ml`, `+200ml`, `+300ml`, `+500ml`.
-- A **Daily Record** list of every drink logged today (time + amount), each removable.
+- A **Daily Record** list of every drink logged today (time + amount). Remove an entry by
+  tapping its ✕ or by **swiping it left or right** (it turns red past the threshold, then
+  slides away).
 - A celebratory notification when the daily goal is reached. 🎉
 
 ### 📊 History & Trend View

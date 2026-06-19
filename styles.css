@@ -290,6 +290,15 @@ html[data-theme="dark"] .badge-met { background: #18352a; color: #5fd0a0; }
   padding: 12px 14px;
   box-shadow: 0 4px 14px rgba(31,58,95,.06);
   animation: pop .25s ease;
+  touch-action: pan-y;        /* horizontal swipe handled by JS, vertical scroll stays native */
+  will-change: transform;
+}
+.record-item.will-delete {
+  box-shadow: 0 4px 18px rgba(224,99,99,.45);
+}
+.record-item.will-delete .amt {
+  background: #ffe2e2;
+  color: #d64545;
 }
 @keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .record-item .icon { font-size: 24px; }

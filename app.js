@@ -245,6 +245,59 @@ listEl.addEventListener('click', (e) => {
   if (btn) deleteRecord(btn.dataset.id);
 });
 
+// ---------- Swipe to delete ----------
+let swipe = null;
+const SWIPE_THRESHOLD = 110;
+
+listEl.addEventListener('touchstart', (e) => {
+  const item = e.target.closest('.record-item');
+  if (!item) return;
+  swipe = {
+    item,
+    id: item.querySelector('.del')?.dataset.id,
+    startX: e.touches[0].clientX,
+    startY: e.touches[0].clientY,
+    dx: 0,
+    axis: null
+  };
+  item.style.transition = 'none';
+}, { passive: true });
+
+listEl.addEventListener('touchmove', (e) => {
+  if (!swipe) return;
+  const t = e.touches[0];
+  const dx = t.clientX - swipe.startX;
+  const dy = t.clientY - swipe.startY;
+  if (swipe.axis === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+    swipe.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+  }
+  if (swipe.axis !== 'x') return;
+  e.preventDefault(); // we own the horizontal gesture; let vertical scroll through
+  swipe.dx = dx;
+  swipe.item.style.transform = `translateX(${dx}px)`;
+  swipe.item.style.opacity = String(Math.max(0.25, 1 - Math.abs(dx) / 260));
+  swipe.item.classList.toggle('will-delete', Math.abs(dx) > SWIPE_THRESHOLD);
+}, { passive: false });
+
+function endSwipe() {
+  if (!swipe) return;
+  const { item, dx, id } = swipe;
+  swipe = null;
+  item.style.transition = 'transform .25s ease, opacity .25s ease';
+  if (Math.abs(dx) > SWIPE_THRESHOLD && id) {
+    const dir = dx > 0 ? 1 : -1;
+    item.style.transform = `translateX(${dir * window.innerWidth}px)`;
+    item.style.opacity = '0';
+    setTimeout(() => deleteRecord(id), 180);
+  } else {
+    item.classList.remove('will-delete');
+    item.style.transform = '';
+    item.style.opacity = '';
+  }
+}
+listEl.addEventListener('touchend', endSwipe);
+listEl.addEventListener('touchcancel', endSwipe);
+
 el('bellBtn').addEventListener('click', openSheet);
 
 el('calcBtn').addEventListener('click', () => {
