@@ -1,0 +1,19 @@
+{
+  "name": "Water Reminder",
+  "short_name": "Water",
+  "description": "Remind to drink water on time",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eaf4ff",
+  "theme_color": "#3ea0f7",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

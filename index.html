@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#3ea0f7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Water" />
+  <title>Water Reminder</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Splash screen -->
+  <div class="splash" id="splash">
+    <div class="splash-logo">
+      <div class="splash-drop">💧</div>
+    </div>
+    <h1 class="splash-title">Water Reminder</h1>
+    <p class="splash-sub">Stay hydrated, stay healthy</p>
+    <div class="splash-bar"><span></span></div>
+  </div>
+
+  <div class="app" id="appRoot">
+   <!-- ===== HOME VIEW ===== -->
+   <div class="view" id="homeView">
+    <!-- Header -->
+    <header class="header">
+      <div class="user">
+        <div class="avatar">💧</div>
+        <span class="greeting">Have a good day!</span>
+      </div>
+      <button id="bellBtn" class="bell" aria-label="Reminders">🔔</button>
+    </header>
+
+    <!-- Water drop progress -->
+    <section class="drop-wrap">
+      <div class="drop" id="drop">
+        <div class="wave" id="wave"></div>
+        <div class="drop-content">
+          <span class="drop-label">Drink Target</span>
+          <span class="drop-amount"><b id="current">0</b>/<span id="goal">1600</span>ml</span>
+        </div>
+      </div>
+      <button class="add-btn" id="addBtn" aria-label="Add water">+</button>
+    </section>
+
+    <!-- Quick add chips -->
+    <section class="chips" id="chips">
+      <button class="chip" data-amount="100">+100ml</button>
+      <button class="chip" data-amount="200">+200ml</button>
+      <button class="chip" data-amount="300">+300ml</button>
+      <button class="chip" data-amount="500">+500ml</button>
+    </section>
+
+    <!-- Daily record -->
+    <section class="record">
+      <h2>Daily Record</h2>
+      <ul class="record-list" id="recordList"></ul>
+      <p class="empty" id="emptyState">No water logged yet today 🥤</p>
+    </section>
+   </div><!-- /homeView -->
+
+   <!-- ===== HISTORY VIEW ===== -->
+   <div class="view" id="historyView" hidden>
+    <header class="header">
+      <h1 class="page-title">History &amp; Trend</h1>
+      <button id="bellBtn2" class="bell" aria-label="Reminders">🔔</button>
+    </header>
+
+    <section class="stats">
+      <div class="stat-card">
+        <span class="stat-num" id="statAvg">0</span>
+        <span class="stat-lbl">Avg / day (ml)</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statBest">0</span>
+        <span class="stat-lbl">Best day (ml)</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statStreak">0</span>
+        <span class="stat-lbl">Goal streak</span>
+      </div>
+    </section>
+
+    <section class="chart-wrap">
+      <h2>Last 7 days</h2>
+      <div class="chart" id="chart"></div>
+    </section>
+
+    <section class="record">
+      <h2>Daily totals</h2>
+      <ul class="history-list" id="historyList"></ul>
+      <p class="empty" id="historyEmpty">No history yet — log some water!</p>
+    </section>
+   </div><!-- /historyView -->
+
+   <!-- ===== TAB BAR ===== -->
+   <nav class="tabbar">
+    <button class="tab active" data-view="home">
+      <span class="tab-icon">💧</span>
+      <span class="tab-lbl">Today</span>
+    </button>
+    <button class="tab" data-view="history">
+      <span class="tab-icon">📊</span>
+      <span class="tab-lbl">History</span>
+    </button>
+   </nav>
+  </div>
+
+  <!-- Settings sheet -->
+  <div class="sheet-overlay" id="sheetOverlay">
+    <div class="sheet" id="sheet">
+      <div class="sheet-handle"></div>
+      <h3>Settings</h3>
+      <label class="field">
+        Daily goal (ml)
+        <input type="number" id="goalInput" min="200" step="100" />
+      </label>
+      <label class="field switch-field">
+        Enable reminders
+        <input type="checkbox" id="remindToggle" />
+      </label>
+      <label class="field">
+        Remind every (minutes)
+        <input type="number" id="intervalInput" min="15" step="5" />
+      </label>
+      <button class="primary-btn" id="saveSettings">Save</button>
+      <button class="ghost-btn" id="resetDay">Reset today's record</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
