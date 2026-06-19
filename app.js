@@ -162,6 +162,26 @@ function playDing() {
   } catch (e) { /* ignore */ }
 }
 
+function playVanish() {
+  if (!audioCtx) return;
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // quick downward "swoosh" — a falling tone with a soft fade
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(720, now);
+    osc.frequency.exponentialRampToValueAtTime(160, now + 0.28);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.22, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.32);
+  } catch (e) { /* ignore */ }
+}
+
 // ---------- Notifications / reminders ----------
 function notify(title, body) {
   // In-app cues (work whenever the app is open)
@@ -286,6 +306,8 @@ function endSwipe() {
   item.style.transition = 'transform .25s ease, opacity .25s ease';
   if (Math.abs(dx) > SWIPE_THRESHOLD && id) {
     const dir = dx > 0 ? 1 : -1;
+    playVanish();
+    if (navigator.vibrate) navigator.vibrate(30);
     item.style.transform = `translateX(${dir * window.innerWidth}px)`;
     item.style.opacity = '0';
     setTimeout(() => deleteRecord(id), 180);
