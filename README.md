@@ -53,6 +53,17 @@ A settings sheet (bell icon) lets the user:
 When reminders are on, the app periodically notifies the user to drink until the daily
 goal is met.
 
+**Sound & vibration:** notifications fire with the device's default notification sound,
+a vibration pattern (`[200,100,200]` on supported phones), and an in-app WebAudio "ding"
+that plays even if the OS notification sound is muted. (The in-app sound needs one tap to
+"unlock" audio first, per browser autoplay rules.)
+
+**⚠️ Background limitation:** reminders run on an in-page timer, so the recurring
+"time to drink" reminder only fires while the app is **open / in the foreground**. When
+the PWA is fully closed, the OS suspends the timer. Reliable background or scheduled
+reminders would require the **Push API + a push server** (out of scope for this
+offline-only build).
+
 ---
 
 ## 3. How Data Is Stored (Local Only)

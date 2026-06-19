@@ -95,16 +95,63 @@ function celebrate() {
   );
 }
 
+// ---------- In-app sound (WebAudio) ----------
+// A short "ding" that works while the app is open, even if the OS
+// notification sound is muted. Audio must be "unlocked" by a user
+// gesture first (browser autoplay policy), which we do on first tap.
+let audioCtx = null;
+function unlockAudio() {
+  try {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) { /* ignore */ }
+}
+function playDing() {
+  if (!audioCtx) return;
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // two soft "water drop" notes
+    [880, 1320].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t = now + i * 0.18;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    });
+  } catch (e) { /* ignore */ }
+}
+
 // ---------- Notifications / reminders ----------
 function notify(title, body) {
+  // In-app cues (work whenever the app is open)
+  playDing();
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const opts = {
+    body,
+    icon: 'icons/icon.svg',
+    badge: 'icons/icon.svg',
+    silent: false,
+    vibrate: [200, 100, 200],
+    tag: 'water-reminder',
+    renotify: true
+  };
   try {
     if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-      navigator.serviceWorker.ready.then((reg) =>
-        reg.showNotification(title, { body, icon: 'icons/icon.svg', badge: 'icons/icon.svg' })
-      );
+      navigator.serviceWorker.ready.then((reg) => reg.showNotification(title, opts));
     } else {
-      new Notification(title, { body });
+      new Notification(title, opts);
     }
   } catch (e) { /* ignore */ }
 }
@@ -138,6 +185,10 @@ function openSheet() {
 function closeSheet() { overlay.classList.remove('open'); }
 
 // ---------- Events ----------
+// Unlock audio on the first interaction anywhere (needed so the reminder
+// timer can play a sound later without a direct user gesture).
+window.addEventListener('pointerdown', unlockAudio, { once: true });
+
 el('addBtn').addEventListener('click', () => addWater(200));
 
 document.querySelectorAll('.chip').forEach((c) =>
