@@ -49,6 +49,12 @@ user's **name**, **daily goal** (with quick presets), and **reminder** preferenc
 that it never shows again (tracked by an `onboarded` flag in settings). The name powers a
 time-aware greeting ("Good morning, Carlos!").
 
+### 🧮 Smart goal calculator
+Inside Settings, an expandable calculator suggests a daily goal from **weight**,
+**activity level**, and **climate**. It uses a ~35 ml-per-kg baseline scaled by activity
+and climate factors, rounded to the nearest 50 ml (clamped 1000–5000 ml). The suggestion
+fills the goal field; tapping **Save** keeps it. Inputs persist for next time.
+
 ### 🌗 Dark mode & theming
 A **Theme** setting offers **System (auto)**, **Light**, and **Dark**. In System mode the
 app follows the OS color scheme live via `prefers-color-scheme`, and the status-bar

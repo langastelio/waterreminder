@@ -1,5 +1,8 @@
 // ---------- State ----------
-const DEFAULTS = { goal: 1600, remind: false, interval: 60, name: '', theme: 'system', onboarded: false };
+const DEFAULTS = {
+  goal: 1600, remind: false, interval: 60, name: '', theme: 'system', onboarded: false,
+  weight: '', activity: '1.12', climate: '1'
+};
 
 const keyForDate = (d) => `water-${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 const todayKey = () => keyForDate(new Date());
@@ -203,6 +206,14 @@ async function ensurePermission() {
   return res === 'granted';
 }
 
+// ---------- Smart goal calculator ----------
+// Baseline ~35 ml per kg of body weight, scaled by activity and climate.
+// Result is clamped to a sensible range and rounded to the nearest 50 ml.
+function suggestGoal(weight, activity, climate) {
+  const ml = weight * 35 * activity * climate;
+  return Math.min(5000, Math.max(1000, Math.round(ml / 50) * 50));
+}
+
 // ---------- Settings sheet ----------
 function openSheet() {
   el('nameInput').value = settings.name;
@@ -210,6 +221,10 @@ function openSheet() {
   el('goalInput').value = settings.goal;
   el('remindToggle').checked = settings.remind;
   el('intervalInput').value = settings.interval;
+  el('calcWeight').value = settings.weight;
+  el('calcActivity').value = settings.activity;
+  el('calcClimate').value = settings.climate;
+  el('calcResult').hidden = true;
   overlay.classList.add('open');
 }
 function closeSheet() { overlay.classList.remove('open'); }
@@ -232,6 +247,20 @@ listEl.addEventListener('click', (e) => {
 
 el('bellBtn').addEventListener('click', openSheet);
 
+el('calcBtn').addEventListener('click', () => {
+  const weight = parseFloat(el('calcWeight').value);
+  const result = el('calcResult');
+  if (!weight || weight < 20) {
+    result.innerHTML = 'Enter a valid weight to get a suggestion.';
+    result.hidden = false;
+    return;
+  }
+  const goal = suggestGoal(weight, parseFloat(el('calcActivity').value), parseFloat(el('calcClimate').value));
+  el('goalInput').value = goal;
+  result.innerHTML = `Suggested daily goal: <b>${goal}ml</b> 💧<br><small>Applied to the field above — tap Save to keep it.</small>`;
+  result.hidden = false;
+});
+
 overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSheet(); });
 
 el('saveSettings').addEventListener('click', async () => {
@@ -239,6 +268,9 @@ el('saveSettings').addEventListener('click', async () => {
   settings.theme = el('themeSelect').value;
   settings.goal = Math.max(200, parseInt(el('goalInput').value, 10) || DEFAULTS.goal);
   settings.interval = Math.max(15, parseInt(el('intervalInput').value, 10) || DEFAULTS.interval);
+  settings.weight = el('calcWeight').value;
+  settings.activity = el('calcActivity').value;
+  settings.climate = el('calcClimate').value;
   const wantRemind = el('remindToggle').checked;
   settings.remind = wantRemind ? await ensurePermission() : false;
   saveSettingsStore();

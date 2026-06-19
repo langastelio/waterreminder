@@ -164,6 +164,29 @@
         Daily goal (ml)
         <input type="number" id="goalInput" min="200" step="100" />
       </label>
+
+      <details class="calc" id="calc">
+        <summary>🧮 Smart goal calculator</summary>
+        <label class="field">Weight (kg)
+          <input type="number" id="calcWeight" min="20" max="250" step="1" placeholder="e.g. 70" />
+        </label>
+        <label class="field">Activity level
+          <select id="calcActivity">
+            <option value="1">Low — little exercise</option>
+            <option value="1.12" selected>Moderate — some exercise</option>
+            <option value="1.25">High — intense / daily</option>
+          </select>
+        </label>
+        <label class="field">Climate
+          <select id="calcClimate">
+            <option value="1" selected>Temperate</option>
+            <option value="1.08">Warm</option>
+            <option value="1.17">Hot</option>
+          </select>
+        </label>
+        <button class="primary-btn ghost-blue" id="calcBtn" type="button">Suggest goal</button>
+        <p class="calc-result" id="calcResult" hidden></p>
+      </details>
       <label class="field switch-field">
         Enable reminders
         <input type="checkbox" id="remindToggle" />

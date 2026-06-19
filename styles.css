@@ -346,6 +346,33 @@ html[data-theme="dark"] .badge-met { background: #18352a; color: #5fd0a0; }
   font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 4px;
 }
 .primary-btn:active { background: var(--blue-dark); }
+.ghost-blue {
+  background: #eaf4ff; color: var(--blue-dark);
+}
+.ghost-blue:active { background: #d8ebff; }
+
+/* ---------- Smart goal calculator ---------- */
+.calc {
+  border: 1.5px solid #e2ebf6;
+  border-radius: 14px;
+  padding: 4px 14px;
+  margin-bottom: 16px;
+}
+.calc summary {
+  cursor: pointer; font-weight: 700; font-size: 14px;
+  color: var(--blue-dark); padding: 10px 0; list-style: none;
+}
+.calc summary::-webkit-details-marker { display: none; }
+.calc[open] summary { margin-bottom: 6px; }
+.calc .field { margin-bottom: 12px; }
+.calc-result {
+  text-align: center; font-size: 14px; font-weight: 600;
+  color: var(--ink); margin: 10px 0 6px;
+}
+.calc-result b { color: var(--blue-dark); font-size: 18px; }
+.calc-result[hidden] { display: none; }
+html[data-theme="dark"] .calc { border-color: #2a3c57; }
+html[data-theme="dark"] .ghost-blue { background: #1e3350; color: #9ecbf5; }
 .ghost-btn {
   width: 100%; background: none; border: none;
   color: #e06363; padding: 12px; font-size: 14px; cursor: pointer; margin-top: 8px;
