@@ -588,6 +588,7 @@ function shiftMonth(delta) {
 
 function renderHistory() {
   const goal = settings.goal;
+  const today = new Date();
 
   renderChart();
   renderWeekly();
