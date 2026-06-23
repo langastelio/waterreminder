@@ -35,7 +35,9 @@ into the main app.
   tapping its ✕ or by **swiping it left or right** (it turns red past the threshold, then
   slides away). A deletion shows an **Undo toast** for 4 seconds (with a countdown bar) so
   accidental removals can be restored to their original position.
-- A celebratory notification when the daily goal is reached. 🎉
+- Each log gives a **haptic tick**, an expanding **water ripple**, and a number **bump**
+  animation. Crossing the daily goal triggers a **confetti burst** + a happy vibration and
+  a celebratory notification. 🎉
 
 ### 📊 History & Trend View
 Accessed via the bottom tab bar:

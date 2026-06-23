@@ -101,14 +101,45 @@ function render() {
 
 // ---------- Actions ----------
 function addWater(amount) {
+  const before = total();
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   records.push({ id: Date.now() + Math.random(), amount, time });
   saveRecords();
   render();
   celebrate();
-  if (total() >= settings.goal) {
-    notify('Goal reached! 🎉', `You drank ${total()}ml today. Great job!`);
+  if (navigator.vibrate) navigator.vibrate(20); // light tick on every log
+
+  // Fire the celebration only when crossing the goal for the first time today
+  if (total() >= settings.goal && before < settings.goal) {
+    goalReached();
+  }
+}
+
+function goalReached() {
+  if (navigator.vibrate) navigator.vibrate([60, 40, 60, 40, 140]); // happy buzz
+  launchConfetti();
+  notify('Goal reached! 🎉', `You drank ${total()}ml today. Great job!`);
+}
+
+function launchConfetti() {
+  const c = el('confetti');
+  if (!c) return;
+  const colors = ['#3ea0f7', '#5fd0a0', '#ffd166', '#ff7b9c', '#8fc7fb', '#2bb578'];
+  const n = 34;
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('i');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[i % colors.length];
+    p.style.setProperty('--x', (Math.random() * 160 - 80) + 'px');
+    p.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+    if (Math.random() > 0.5) p.style.borderRadius = '50%';
+    const dur = 1.6 + Math.random() * 1.2;
+    p.style.animationDuration = dur + 's';
+    p.style.animationDelay = Math.random() * 0.25 + 's';
+    c.appendChild(p);
+    setTimeout(() => p.remove(), (dur + 0.6) * 1000);
   }
 }
 
@@ -155,6 +186,14 @@ function celebrate() {
     [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
     { duration: 300, easing: 'ease-out' }
   );
+  // expanding ripple on the water surface
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  drop.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 750);
+  // bump the amount number
+  const b = document.querySelector('.drop-amount b');
+  if (b) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
 }
 
 // ---------- In-app sound (WebAudio) ----------
