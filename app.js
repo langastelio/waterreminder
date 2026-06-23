@@ -113,9 +113,40 @@ function addWater(amount) {
 }
 
 function deleteRecord(id) {
-  records = records.filter((r) => String(r.id) !== String(id));
+  const index = records.findIndex((r) => String(r.id) === String(id));
+  if (index === -1) return;
+  const [removed] = records.splice(index, 1);
   saveRecords();
   render();
+  showUndoToast(removed, index);
+}
+
+// ---------- Undo toast ----------
+let lastDeleted = null;
+let toastTimer = null;
+function showUndoToast(record, index) {
+  lastDeleted = { record, index };
+  el('toastMsg').textContent = `${record.amount}ml removed`;
+  const toast = el('toast');
+  toast.classList.remove('show');
+  void toast.offsetWidth; // restart the countdown animation
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 4000);
+}
+function hideToast() {
+  el('toast').classList.remove('show');
+  lastDeleted = null;
+}
+function undoDelete() {
+  if (lastDeleted) {
+    const i = Math.min(lastDeleted.index, records.length);
+    records.splice(i, 0, lastDeleted.record);
+    saveRecords();
+    render();
+  }
+  clearTimeout(toastTimer);
+  hideToast();
 }
 
 function celebrate() {
@@ -321,6 +352,7 @@ listEl.addEventListener('touchend', endSwipe);
 listEl.addEventListener('touchcancel', endSwipe);
 
 el('bellBtn').addEventListener('click', openSheet);
+el('toastUndo').addEventListener('click', undoDelete);
 
 el('calcBtn').addEventListener('click', () => {
   const weight = parseFloat(el('calcWeight').value);

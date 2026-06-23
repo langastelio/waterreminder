@@ -33,7 +33,8 @@ into the main app.
 - **Quick-add chips** — `+100ml`, `+200ml`, `+300ml`, `+500ml`.
 - A **Daily Record** list of every drink logged today (time + amount). Remove an entry by
   tapping its ✕ or by **swiping it left or right** (it turns red past the threshold, then
-  slides away).
+  slides away). A deletion shows an **Undo toast** for 4 seconds (with a countdown bar) so
+  accidental removals can be restored to their original position.
 - A celebratory notification when the daily goal is reached. 🎉
 
 ### 📊 History & Trend View
