@@ -393,6 +393,76 @@ const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
 
+// ---------- Trend chart (7 / 30 days) ----------
+let chartRange = 7;
+function renderChart() {
+  const goal = settings.goal;
+  const n = chartRange;
+  const compact = n > 7;
+  const today = new Date();
+  const days = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    days.push({ date: d, total: totalForDate(d) });
+  }
+  const maxVal = Math.max(goal, ...days.map((x) => x.total), 1);
+
+  const chart = el('chart');
+  chart.classList.toggle('compact', compact);
+  chart.innerHTML = days.map((x, idx) => {
+    const h = Math.round((x.total / maxVal) * 100);
+    const met = x.total >= goal && goal > 0;
+    const isToday = idx === n - 1;
+    // In 30-day view only label a few cells to avoid clutter
+    const showDay = !compact || isToday || idx === 0 || x.date.getDate() === 1 || idx % 5 === 0;
+    const dayLbl = isToday ? 'Today' : compact ? x.date.getDate() : DOW[x.date.getDay()];
+    return `
+      <div class="bar-col">
+        ${compact ? '' : `<span class="bar-val">${x.total || ''}</span>`}
+        <div class="bar-track">
+          <div class="bar ${met ? 'goal-met' : ''}" style="height:${Math.max(h, x.total ? 4 : 0)}%"></div>
+        </div>
+        <span class="bar-day ${isToday ? 'today' : ''}">${showDay ? dayLbl : ''}</span>
+      </div>`;
+  }).join('');
+  el('chartTitle').textContent = `Last ${n} days`;
+}
+
+// ---------- Weekly averages (last 4 rolling weeks) ----------
+function renderWeekly() {
+  const goal = settings.goal || 1;
+  const today = new Date();
+  const fmt = (d) => d.toLocaleDateString([], { day: 'numeric', month: 'short' });
+
+  const weeks = [];
+  for (let w = 0; w < 4; w++) {
+    let sum = 0, end, start;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (w * 7 + i));
+      sum += totalForDate(d);
+      if (i === 0) end = d;
+      if (i === 6) start = d;
+    }
+    weeks.push({ w, avg: Math.round(sum / 7), total: sum, start, end });
+  }
+
+  el('weeklyList').innerHTML = weeks.map((wk) => {
+    const pct = Math.min(100, Math.round((wk.avg / goal) * 100));
+    const range = `${fmt(wk.start)} – ${fmt(wk.end)}`;
+    const label = wk.w === 0 ? 'This week' : wk.w === 1 ? 'Last week' : range;
+    const sub = wk.w < 2 ? range : `${wk.total} ml total`;
+    return `
+      <li class="weekly-item">
+        <div class="w-info">
+          <div class="w-label">${label}</div>
+          <div class="w-sub">${sub}</div>
+          <div class="w-bar"><span style="width:${pct}%"></span></div>
+        </div>
+        <div class="w-avg">${wk.avg}<small>ml/day</small></div>
+      </li>`;
+  }).join('');
+}
+
 // ---------- Calendar heatmap ----------
 let hmYear, hmMonth; // currently displayed month
 function initHeatmapMonth() {
@@ -448,28 +518,8 @@ function shiftMonth(delta) {
 function renderHistory() {
   const goal = settings.goal;
 
-  // --- Last 7 days chart (includes today, fills empty days with 0) ---
-  const last7 = [];
-  const today = new Date();
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-    last7.push({ date: d, total: totalForDate(d) });
-  }
-  const maxVal = Math.max(goal, ...last7.map((x) => x.total), 1);
-  const chart = el('chart');
-  chart.innerHTML = last7.map((x, idx) => {
-    const h = Math.round((x.total / maxVal) * 100);
-    const met = x.total >= goal && goal > 0;
-    const isToday = idx === 6;
-    return `
-      <div class="bar-col">
-        <span class="bar-val">${x.total || ''}</span>
-        <div class="bar-track">
-          <div class="bar ${met ? 'goal-met' : ''}" style="height:${Math.max(h, x.total ? 4 : 0)}%"></div>
-        </div>
-        <span class="bar-day ${isToday ? 'today' : ''}">${isToday ? 'Today' : DOW[x.date.getDay()]}</span>
-      </div>`;
-  }).join('');
+  renderChart();
+  renderWeekly();
 
   // --- Stats across all logged days ---
   const days = allDays().filter((d) => d.total > 0);
@@ -537,6 +587,16 @@ if (bell2) bell2.addEventListener('click', openSheet);
 
 el('hmPrev').addEventListener('click', () => shiftMonth(-1));
 el('hmNext').addEventListener('click', () => shiftMonth(1));
+
+document.querySelectorAll('#rangeToggle button').forEach((b) =>
+  b.addEventListener('click', () => {
+    chartRange = parseInt(b.dataset.range, 10);
+    document.querySelectorAll('#rangeToggle button').forEach((x) =>
+      x.classList.toggle('active', x === b)
+    );
+    renderChart();
+  })
+);
 
 // ---------- Onboarding (first launch) ----------
 function showOnboarding() {

@@ -40,8 +40,10 @@ into the main app.
 Accessed via the bottom tab bar:
 - **Stat cards** — average intake per day, best day, and current **goal streak**
   (consecutive days the goal was met).
-- **Last 7 days bar chart** — one bar per day; bars turn **green** when the goal was met,
-  and today is labelled “Today”.
+- **Trend bar chart with 7d / 30d toggle** — one bar per day; bars turn **green** when the
+  goal was met, today is labelled “Today”. Switch to a compact 30-day view for the month.
+- **Weekly averages** — the last 4 rolling weeks, each showing ml-per-day average, date
+  range, and a progress bar versus the goal.
 - **Calendar heatmap** — a month grid where each day is shaded by how close it got to the
   goal (light → dark blue, green when met). Navigate months with ‹ / ›; future months are
   disabled, today is outlined, and each cell shows its ml / % on hover.

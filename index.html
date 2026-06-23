@@ -119,8 +119,19 @@
     </section>
 
     <section class="chart-wrap">
-      <h2>Last 7 days</h2>
+      <div class="chart-head">
+        <h2 id="chartTitle">Last 7 days</h2>
+        <div class="range-toggle" id="rangeToggle">
+          <button class="active" data-range="7">7d</button>
+          <button data-range="30">30d</button>
+        </div>
+      </div>
       <div class="chart" id="chart"></div>
+    </section>
+
+    <section class="weekly-wrap">
+      <h2>Weekly averages</h2>
+      <ul class="weekly-list" id="weeklyList"></ul>
     </section>
 
     <section class="heatmap-wrap">

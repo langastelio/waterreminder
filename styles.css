@@ -429,6 +429,23 @@ html[data-theme="dark"] .ghost-blue { background: #1e3350; color: #9ecbf5; }
 /* ---------- Chart ---------- */
 .chart-wrap { margin-top: 20px; }
 .chart-wrap h2 { font-size: 16px; margin-bottom: 14px; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; }
+.chart-head h2 { margin-bottom: 14px; }
+.range-toggle {
+  display: inline-flex; background: #e8f0fa; border-radius: 12px; padding: 3px;
+}
+.range-toggle button {
+  border: none; background: none; cursor: pointer;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  padding: 5px 12px; border-radius: 9px;
+}
+.range-toggle button.active { background: var(--blue); color: #fff; }
+html[data-theme="dark"] .range-toggle { background: #14233b; }
+
+/* compact (30-day) chart */
+.chart.compact { gap: 3px; padding: 16px 8px 10px; }
+.chart.compact .bar { max-width: 12px; width: 82%; }
+.chart.compact .bar-day { font-size: 8px; }
 .chart {
   display: flex;
   align-items: flex-end;
@@ -468,6 +485,25 @@ html[data-theme="dark"] .ghost-blue { background: #1e3350; color: #9ecbf5; }
 .bar-val { font-size: 9px; color: var(--muted); }
 .bar-day { font-size: 11px; color: var(--muted); font-weight: 600; }
 .bar-day.today { color: var(--blue-dark); }
+
+/* ---------- Weekly averages ---------- */
+.weekly-wrap { margin-top: 22px; }
+.weekly-wrap h2 { font-size: 16px; margin-bottom: 12px; }
+.weekly-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.weekly-item {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border-radius: 16px; padding: 12px 14px;
+  box-shadow: 0 4px 14px rgba(31,58,95,.06);
+}
+.w-info { flex: 1; }
+.w-label { font-weight: 700; font-size: 14px; }
+.w-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.w-bar { height: 6px; border-radius: 3px; background: #e8f0fa; margin-top: 7px; overflow: hidden; }
+.w-bar span { display: block; height: 100%; background: var(--blue); border-radius: 3px; }
+.w-avg { font-weight: 800; font-size: 15px; color: var(--blue-dark); text-align: right; }
+.w-avg small { display: block; font-weight: 500; font-size: 10px; color: var(--muted); }
+html[data-theme="dark"] .weekly-item { background: var(--card); }
+html[data-theme="dark"] .w-bar { background: #1e3350; }
 
 /* ---------- Calendar heatmap ---------- */
 .heatmap-wrap {
