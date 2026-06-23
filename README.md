@@ -42,6 +42,9 @@ Accessed via the bottom tab bar:
   (consecutive days the goal was met).
 - **Last 7 days bar chart** — one bar per day; bars turn **green** when the goal was met,
   and today is labelled “Today”.
+- **Calendar heatmap** — a month grid where each day is shaded by how close it got to the
+  goal (light → dark blue, green when met). Navigate months with ‹ / ›; future months are
+  disabled, today is outlined, and each cell shows its ml / % on hover.
 - **Daily totals list** — every recorded day, newest first, with a progress bar,
   amount-vs-goal, and a ✅ “Goal met” badge.
 

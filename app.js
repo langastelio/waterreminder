@@ -390,6 +390,60 @@ function totalForDate(d) {
 }
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
+
+// ---------- Calendar heatmap ----------
+let hmYear, hmMonth; // currently displayed month
+function initHeatmapMonth() {
+  if (hmYear === undefined) {
+    const now = new Date();
+    hmYear = now.getFullYear();
+    hmMonth = now.getMonth();
+  }
+}
+function hmLevel(total, goal) {
+  if (!total) return 'hm-l0';
+  const r = total / goal;
+  if (r >= 1) return 'hm-met';
+  if (r >= 0.75) return 'hm-l4';
+  if (r >= 0.5) return 'hm-l3';
+  if (r >= 0.25) return 'hm-l2';
+  return 'hm-l1';
+}
+function renderHeatmap() {
+  initHeatmapMonth();
+  const goal = settings.goal || 1;
+  el('hmMonth').textContent = `${MONTHS[hmMonth]} ${hmYear}`;
+  const firstDow = new Date(hmYear, hmMonth, 1).getDay();
+  const daysInMonth = new Date(hmYear, hmMonth + 1, 0).getDate();
+  const today = new Date();
+
+  let html = '';
+  for (let i = 0; i < firstDow; i++) html += '<div class="hm-cell blank"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(hmYear, hmMonth, d);
+    const total = totalForDate(date);
+    const lvl = hmLevel(total, goal);
+    const isToday =
+      d === today.getDate() && hmMonth === today.getMonth() && hmYear === today.getFullYear();
+    const pct = Math.round((total / goal) * 100);
+    html += `<div class="hm-cell ${lvl}${isToday ? ' today' : ''}" title="${total}ml (${pct}% of goal)">${d}</div>`;
+  }
+  el('heatmap').innerHTML = html;
+
+  // Don't allow navigating into the future
+  const cur = new Date();
+  el('hmNext').disabled =
+    hmYear > cur.getFullYear() || (hmYear === cur.getFullYear() && hmMonth >= cur.getMonth());
+}
+function shiftMonth(delta) {
+  initHeatmapMonth();
+  hmMonth += delta;
+  if (hmMonth < 0) { hmMonth = 11; hmYear--; }
+  else if (hmMonth > 11) { hmMonth = 0; hmYear++; }
+  renderHeatmap();
+}
 
 function renderHistory() {
   const goal = settings.goal;
@@ -435,6 +489,8 @@ function renderHistory() {
   el('statBest').textContent = best;
   el('statStreak').textContent = streak;
 
+  renderHeatmap();
+
   // --- Daily totals list (newest first) ---
   const listEl2 = el('historyList');
   const emptyH = el('historyEmpty');
@@ -478,6 +534,9 @@ document.querySelectorAll('.tab').forEach((t) =>
 
 const bell2 = el('bellBtn2');
 if (bell2) bell2.addEventListener('click', openSheet);
+
+el('hmPrev').addEventListener('click', () => shiftMonth(-1));
+el('hmNext').addEventListener('click', () => shiftMonth(1));
 
 // ---------- Onboarding (first launch) ----------
 function showOnboarding() {

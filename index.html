@@ -123,6 +123,23 @@
       <div class="chart" id="chart"></div>
     </section>
 
+    <section class="heatmap-wrap">
+      <div class="heatmap-head">
+        <button class="hm-nav" id="hmPrev" aria-label="Previous month">‹</button>
+        <h2 id="hmMonth">Month</h2>
+        <button class="hm-nav" id="hmNext" aria-label="Next month">›</button>
+      </div>
+      <div class="heatmap-dows">
+        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+      </div>
+      <div class="heatmap" id="heatmap"></div>
+      <div class="heatmap-legend">
+        <span>Less</span>
+        <i class="lvl hm-l1"></i><i class="lvl hm-l2"></i><i class="lvl hm-l3"></i><i class="lvl hm-l4"></i><i class="lvl hm-met"></i>
+        <span>Goal</span>
+      </div>
+    </section>
+
     <section class="record">
       <h2>Daily totals</h2>
       <ul class="history-list" id="historyList"></ul>
